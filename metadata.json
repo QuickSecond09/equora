@@ -1,0 +1,6 @@
+{
+  "name": "EQUORA - Gender Representation & Education Platform",
+  "description": "EQUORA helps students recognize, understand, and explore gender representation and possible bias in textbooks, curriculum, and global society.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
