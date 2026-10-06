@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
+import googleOAuthHandler from './api/auth/oauth.js';
 
 dotenv.config();
 
@@ -159,32 +160,9 @@ app.post('/api/auth/demo', (req: Request, res: Response) => {
   });
 });
 
-// POST /api/auth/oauth (Google, Microsoft Education)
-app.post('/api/auth/oauth', (req: Request, res: Response) => {
-  const { provider, email, name, role, schoolOrOrg } = req.body;
-  
-  const userEmail = email || (provider === 'google' ? 'student@gmail.com' : 'educator@microsoftedu.com');
-  let user = USERS.find((u) => u.email.toLowerCase() === userEmail.toLowerCase());
-
-  if (!user) {
-    user = {
-      id: `usr-${provider}-${Date.now()}`,
-      name: name || (provider === 'google' ? 'Google Scholar' : 'Microsoft Education User'),
-      email: userEmail,
-      role: role === 'educator' ? 'educator' : 'student',
-      schoolOrOrg: schoolOrOrg || (provider === 'google' ? 'Google Workspace for Education' : 'Metro High School (Office 365)'),
-      gradeLevel: role === 'educator' ? 'Faculty' : 'Grade 11',
-      avatarColor: provider === 'google' ? 'from-rose-400 to-amber-400' : 'from-blue-500 to-sky-400',
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    USERS.push(user);
-  }
-
-  const { password: _, ...userSafe } = user;
-  res.json({
-    token: `eq-tok-oauth-${provider}-${Date.now()}`,
-    user: userSafe,
-  });
+// GET /api/auth/oauth starts Google sign-in and handles its callback/session handoff.
+app.all('/api/auth/oauth', (req: Request, res: Response) => {
+  void googleOAuthHandler(req, res);
 });
 
 // -------------------------------------------------------------
