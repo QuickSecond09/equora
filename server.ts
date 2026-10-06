@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
-import googleOAuthHandler from './api/auth/oauth.js';
+import googleOAuthHandler from './oauth.js';
 
 dotenv.config();
 
