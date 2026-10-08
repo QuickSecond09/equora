@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageId } from './types';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { AuthModal } from './components/AuthModal';
@@ -11,16 +12,17 @@ import { ChatPage } from './pages/ChatPage';
 import { LearnPage } from './pages/LearnPage';
 import { WorldPage } from './pages/WorldPage';
 import { NewsPage } from './pages/NewsPage';
+import { ReportPage } from './pages/ReportPage';
 import { AboutPage } from './pages/AboutPage';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageId>('home');
 
-  // Sync with browser hash if present (e.g. #scan, #world)
+  // Sync with browser hash if present (e.g. #scan, #world, #report)
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') as PageId;
-      if (['home', 'scan', 'chat', 'learn', 'world', 'news', 'about'].includes(hash)) {
+      if (['home', 'scan', 'chat', 'learn', 'world', 'news', 'report', 'about'].includes(hash)) {
         setCurrentPage(hash);
       }
     };
@@ -37,30 +39,33 @@ export default function App() {
   };
 
   return (
-    <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#1E293B] relative selection:bg-[#FFD8CC]/60 selection:text-[#0D192E]">
-        {/* Sticky Glassmorphic Navigation */}
-        <Navbar currentPage={currentPage} onNavigate={navigateTo} />
+    <ThemeProvider>
+      <AuthProvider>
+        <div className="min-h-screen flex flex-col bg-[#FAF7F2] dark:bg-[#070D18] text-[#1E293B] dark:text-[#E2E8F0] relative selection:bg-[#FFD8CC]/60 selection:text-[#0D192E] dark:selection:bg-[#F97059]/40 dark:selection:text-white transition-colors duration-200">
+          {/* Sticky Glassmorphic Navigation */}
+          <Navbar currentPage={currentPage} onNavigate={navigateTo} />
 
-        {/* Main Content Area */}
-        <main className="flex-1">
-          {currentPage === 'home' && <HomePage onNavigate={navigateTo} />}
-          {currentPage === 'scan' && <ScanPage />}
-          {currentPage === 'chat' && <ChatPage />}
-          {currentPage === 'learn' && <LearnPage />}
-          {currentPage === 'world' && <WorldPage />}
-          {currentPage === 'news' && <NewsPage />}
-          {currentPage === 'about' && <AboutPage />}
-        </main>
+          {/* Main Content Area */}
+          <main className="flex-1">
+            {currentPage === 'home' && <HomePage onNavigate={navigateTo} />}
+            {currentPage === 'scan' && <ScanPage />}
+            {currentPage === 'chat' && <ChatPage />}
+            {currentPage === 'learn' && <LearnPage />}
+            {currentPage === 'world' && <WorldPage />}
+            {currentPage === 'news' && <NewsPage />}
+            {currentPage === 'report' && <ReportPage />}
+            {currentPage === 'about' && <AboutPage />}
+          </main>
 
-        {/* Platform Editorial Footer */}
-        <Footer onNavigate={navigateTo} />
+          {/* Platform Editorial Footer */}
+          <Footer onNavigate={navigateTo} />
 
-        {/* Glassmorphic Global Modals */}
-        <AuthModal />
-        <UserProfileDrawer />
-      </div>
-    </AuthProvider>
+          {/* Glassmorphic Global Modals */}
+          <AuthModal />
+          <UserProfileDrawer />
+        </div>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

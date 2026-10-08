@@ -64,7 +64,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   onClick={() => handleNav('world')}
                   className="hover:text-white transition-colors"
                 >
-                  Global 3D Data Globe
+                  Global Inequality World Map
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleNav('report')}
+                  className="hover:text-white transition-colors text-peach-300 text-[#FFD8CC]"
+                >
+                  Report Inequality Incident
                 </button>
               </li>
             </ul>

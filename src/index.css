@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-serif: 'Fraunces', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -25,6 +27,16 @@ body {
   background-color: #FAF7F2;
   color: #1E293B;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #070D18;
+  color: #E2E8F0;
 }
 
 .font-editorial {
@@ -46,4 +58,132 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
 }
+
+/* Dark mode scrollbar */
+html.dark ::-webkit-scrollbar-track {
+  background: #0B1222;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #1E293B;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Global dark mode overrides for cards, surfaces and text */
+html.dark .bg-white {
+  background-color: #0F172A;
+}
+
+html.dark .bg-white\/60,
+html.dark .bg-white\/70,
+html.dark .bg-white\/80,
+html.dark .bg-white\/85,
+html.dark .bg-white\/90 {
+  background-color: rgba(15, 23, 42, 0.85);
+}
+
+html.dark .bg-\[\#FAF7F2\] {
+  background-color: #0B1324;
+}
+
+html.dark .bg-\[\#FAF7F2\]\/80,
+html.dark .bg-\[\#FAF7F2\]\/85,
+html.dark .bg-\[\#FAF7F2\]\/90,
+html.dark .bg-\[\#FAF7F2\]\/95 {
+  background-color: rgba(11, 19, 36, 0.92);
+}
+
+html.dark .bg-\[\#FFF5F0\],
+html.dark .bg-\[\#FFF5F0\]\/70,
+html.dark .bg-\[\#FFF5F0\]\/90 {
+  background-color: #13203A;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #0D1629;
+}
+
+html.dark .bg-slate-100 {
+  background-color: #162238;
+}
+
+html.dark .text-\[\#0D192E\] {
+  color: #F8FAFC;
+}
+
+html.dark .text-slate-800 {
+  color: #F1F5F9;
+}
+
+html.dark .text-slate-700 {
+  color: #E2E8F0;
+}
+
+html.dark .text-slate-600 {
+  color: #94A3B8;
+}
+
+html.dark .text-slate-500 {
+  color: #64748B;
+}
+
+html.dark .border-slate-200,
+html.dark .border-slate-200\/60,
+html.dark .border-slate-200\/80,
+html.dark .border-slate-200\/90,
+html.dark .border-slate-100 {
+  border-color: #1E293B;
+}
+
+html.dark .border-peach-200,
+html.dark .border-peach-200\/50,
+html.dark .border-peach-200\/60,
+html.dark .border-peach-200\/70,
+html.dark .border-peach-200\/80 {
+  border-color: #2D3E5E;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: #0B1324;
+  color: #F8FAFC;
+  border-color: #1E293B;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748B;
+}
+
+/* Leaflet map popup dark theme */
+html.dark .leaflet-popup-content-wrapper,
+html.dark .leaflet-popup-tip {
+  background-color: #0F172A;
+  color: #F8FAFC;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  border: 1px solid #1E293B;
+}
+
+/* Primary dark buttons contrast refinement */
+html.dark button.bg-\[\#0D192E\],
+html.dark a.bg-\[\#0D192E\] {
+  background-color: #1E293B;
+  border: 1px solid #334155;
+  color: #F8FAFC;
+}
+
+html.dark button.bg-\[\#0D192E\]:hover,
+html.dark a.bg-\[\#0D192E\]:hover {
+  background-color: #334155;
+}
+
+/* Subtle glow adjustments for dark mode */
+html.dark .shadow-sm,
+html.dark .shadow-xs,
+html.dark .shadow-2xs {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
 

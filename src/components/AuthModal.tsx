@@ -95,25 +95,25 @@ export const AuthModal: React.FC = () => {
       />
 
       {/* Glassmorphic Modal Shell matching EQUORA editorial palette */}
-      <div className="relative w-full max-w-md rounded-3xl backdrop-blur-2xl bg-[#FAF7F2]/85 border border-white/70 shadow-[0_25px_60px_-15px_rgba(13,25,46,0.22)] p-6 sm:p-8 overflow-hidden z-10 animate-slide-up max-h-[92vh] overflow-y-auto ring-1 ring-peach-300/30">
+      <div className="relative w-full max-w-md rounded-3xl backdrop-blur-2xl bg-[#FAF7F2]/85 dark:bg-[#0B1324]/95 border border-white/70 dark:border-slate-800 shadow-[0_25px_60px_-15px_rgba(13,25,46,0.22)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] p-6 sm:p-8 overflow-hidden z-10 animate-slide-up max-h-[92vh] overflow-y-auto ring-1 ring-peach-300/30 dark:ring-slate-700/50">
         {/* Warm ambient glowing orbs behind frosted surface */}
-        <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#FFD8CC]/55 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#38BDF8]/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#FFD8CC]/55 dark:bg-[#38BDF8]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#38BDF8]/20 dark:bg-[#F97059]/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Close Button with subtle glass highlight */}
         <button
           onClick={closeAuthModal}
-          className="absolute top-5 right-5 p-2 rounded-xl text-slate-500 hover:text-slate-900 backdrop-blur-md bg-white/40 hover:bg-white/80 border border-white/60 shadow-2xs transition-all z-20"
+          className="absolute top-5 right-5 p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white backdrop-blur-md bg-white/40 hover:bg-white/80 dark:bg-slate-800/60 dark:hover:bg-slate-800 border border-white/60 dark:border-slate-700 shadow-2xs transition-all z-20"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Header Branding */}
         <div className="text-center space-y-1.5 mb-6 relative z-10">
-          <span className="font-serif text-2xl font-bold tracking-tight text-[#0D192E]">
+          <span className="font-serif text-2xl font-bold tracking-tight text-[#0D192E] dark:text-white">
             EQUORA
           </span>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-slate-600 dark:text-slate-400">
             {mode === 'login'
               ? 'Sign in to access your saved textbook scans and curriculum logs.'
               : 'Join the student & educator network exploring representation.'}
@@ -127,7 +127,7 @@ export const AuthModal: React.FC = () => {
             type="button"
             onClick={() => handleOAuthClick('google')}
             disabled={loading}
-            className="w-full py-2.5 px-4 rounded-2xl text-xs font-semibold text-slate-800 backdrop-blur-md bg-white/70 hover:bg-white/95 border border-white/80 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-xs transition-all flex items-center justify-center gap-3 group"
+            className="w-full py-2.5 px-4 rounded-2xl text-xs font-semibold text-slate-800 dark:text-slate-200 backdrop-blur-md bg-white/70 hover:bg-white/95 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-white/80 dark:border-slate-700 shadow-[0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-xs transition-all flex items-center justify-center gap-3 group"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path

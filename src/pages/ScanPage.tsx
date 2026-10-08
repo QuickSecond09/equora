@@ -37,7 +37,9 @@ export const ScanPage: React.FC = () => {
   const [extractedText, setExtractedText] = useState<string>('');
   const [selectedSample, setSelectedSample] = useState<SampleTextbook | null>(null);
   const [hasSavedScan, setHasSavedScan] = useState<boolean>(false);
-  const [ocrEngineUsed, setOcrEngineUsed] = useState<string>('Tesseract OCR');
+  const [ocrEngineUsed, setOcrEngineUsed] = useState<string>('AI Vision OCR');
+  const [ocrErrorNotice, setOcrErrorNotice] = useState<string | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   // Manual text paste modal
   const [isManualPasteOpen, setIsManualPasteOpen] = useState<boolean>(false);
@@ -93,11 +95,12 @@ export const ScanPage: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  // Perform real Optical Character Recognition using hybrid in-browser + server engine
+  // Perform real Optical Character Recognition using hybrid Vision AI + Tesseract engine
   const performOcr = async (imageSource: string) => {
     setStage('processing');
     setProgressPercent(15);
     setProgressMessage('Preprocessing image with ScanKit filters...');
+    setOcrErrorNotice(null);
 
     // Draw to canvas with brightness & contrast filters for optimal OCR accuracy
     let processedImageData = imageSource;
@@ -125,66 +128,77 @@ export const ScanPage: React.FC = () => {
       // Fallback to raw image if canvas filter fails
     }
 
-    setProgressPercent(30);
-    setProgressMessage('Initializing Tesseract OCR engine...');
+    setProgressPercent(35);
+    setProgressMessage('Transcribing textbook page with Vision OCR...');
 
     let recognizedText = '';
+    let engineName = 'AI Vision OCR';
 
-    // Step 1: In-browser Tesseract.js recognition
+    // Step 1: Call server /api/ocr (Multimodal Gemini Vision OCR + Server Tesseract fallback)
     try {
-      const res = await Tesseract.recognize(processedImageData, 'eng', {
-        logger: (m) => {
-          if (m.status === 'recognizing text' && typeof m.progress === 'number') {
-            const p = Math.min(85, Math.max(30, Math.round(30 + m.progress * 55)));
-            setProgressPercent(p);
-            setProgressMessage(`Recognizing text characters (${Math.round(m.progress * 100)}%)...`);
-          }
-        },
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 22000);
 
-      if (res?.data?.text && res.data.text.trim().length > 10) {
-        recognizedText = res.data.text.trim();
-        setOcrEngineUsed('Tesseract In-Browser OCR');
+      const apiRes = await fetch('/api/ocr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: processedImageData }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (apiRes.ok) {
+        const apiData = await apiRes.json();
+        if (apiData.text && apiData.text.trim().length > 5) {
+          recognizedText = apiData.text.trim();
+          engineName = apiData.source || 'Gemini Vision OCR';
+        }
       }
-    } catch (tessErr) {
-      console.warn('Tesseract OCR notice:', tessErr);
+    } catch (apiErr) {
+      console.warn('Server OCR fetch notice:', apiErr);
     }
 
-    // Step 2: If client OCR didn't yield enough characters, call backend /api/ocr (Gemini Vision)
-    if (!recognizedText || recognizedText.length < 15) {
+    // Step 2: In-browser Tesseract.js fallback if server didn't return text (with strict 8s timeout)
+    if (!recognizedText || recognizedText.length < 10) {
+      setProgressPercent(70);
+      setProgressMessage('Running secondary character recognition...');
       try {
-        setProgressPercent(85);
-        setProgressMessage('Transcribing with Gemini Vision OCR...');
-        const apiRes = await fetch('/api/ocr', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageSource }),
+        const tesseractTimeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000));
+        const tesseractPromise = Tesseract.recognize(processedImageData, 'eng', {
+          logger: (m) => {
+            if (m.status === 'recognizing text' && typeof m.progress === 'number') {
+              const p = Math.min(95, Math.max(70, Math.round(70 + m.progress * 25)));
+              setProgressPercent(p);
+            }
+          },
         });
-        if (apiRes.ok) {
-          const apiData = await apiRes.json();
-          if (apiData.text && apiData.text.trim().length > 0) {
-            recognizedText = apiData.text.trim();
-            setOcrEngineUsed('Gemini Vision OCR');
-          }
+
+        const res: any = await Promise.race([tesseractPromise, tesseractTimeout]);
+        if (res?.data?.text && res.data.text.trim().length > 10) {
+          recognizedText = res.data.text.trim();
+          engineName = 'Tesseract In-Browser OCR';
         }
-      } catch (apiErr) {
-        console.warn('Server OCR fallback notice:', apiErr);
+      } catch (tessErr) {
+        console.warn('Browser Tesseract notice:', tessErr);
       }
     }
 
     setProgressPercent(100);
-    setProgressMessage('Text extraction complete!');
+    setProgressMessage('Transcription complete!');
+    setOcrEngineUsed(engineName);
 
     setTimeout(() => {
       if (recognizedText) {
         setExtractedText(recognizedText);
+        setOcrErrorNotice(null);
       } else {
-        setExtractedText(
-          `[OCR Notice: Minimal or blurry text detected in this image. You can type or paste your textbook paragraph directly here for analysis, or adjust brightness/contrast and click "Re-run OCR".]`
+        setExtractedText('');
+        setOcrErrorNotice(
+          'No clear text could be detected from this image. You can adjust the image contrast/brightness filters on the left and click "Re-run OCR", type or paste your excerpt directly into this box, or choose one of our verified curriculum samples below.'
         );
       }
       setStage('extracted');
-    }, 400);
+    }, 300);
   };
 
   const loadSample = (sample: SampleTextbook) => {
@@ -240,6 +254,7 @@ export const ScanPage: React.FC = () => {
   // Camera integration
   const startCamera = async () => {
     try {
+      setCameraError(null);
       setCameraActive(true);
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
@@ -250,7 +265,7 @@ export const ScanPage: React.FC = () => {
       }
     } catch (err) {
       console.warn('Camera access error:', err);
-      alert('Unable to access camera directly. You can upload an image or choose one of our sample pages.');
+      setCameraError('Unable to access camera directly in this browser frame. You can upload an image file or choose a sample page below.');
       setCameraActive(false);
     }
   };
@@ -502,6 +517,18 @@ export const ScanPage: React.FC = () => {
                   <span>Paste Text Directly</span>
                 </button>
               </div>
+
+              {cameraError && (
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs flex items-center justify-between gap-2 max-w-md mx-auto text-left">
+                  <span>{cameraError}</span>
+                  <button
+                    onClick={() => setCameraError(null)}
+                    className="text-amber-600 hover:text-amber-900 font-bold p-1"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
 
               <div className="text-[11px] text-slate-400 pt-2 flex items-center justify-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -793,6 +820,16 @@ export const ScanPage: React.FC = () => {
                   </div>
                   <span className="text-[11px] text-slate-400">Editable for corrections</span>
                 </div>
+
+                {ocrErrorNotice && (
+                  <div className="p-3.5 bg-amber-50 border border-amber-200/90 rounded-2xl text-xs text-amber-900 space-y-1.5 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <div className="font-semibold text-amber-950">Transcription Notice</div>
+                      <p className="text-amber-800 leading-relaxed">{ocrErrorNotice}</p>
+                    </div>
+                  </div>
+                )}
 
                 <textarea
                   value={extractedText}

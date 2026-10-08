@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Eye,
   BookOpen,
@@ -9,18 +9,15 @@ import {
   ArrowRight,
   ShieldCheck,
   Check,
-  Edit2,
   Users,
   Compass,
-  Plus,
-  Trash2,
   Table,
   CheckCircle2
 } from 'lucide-react';
 
 export const AboutPage: React.FC = () => {
   // Official project team members matching Section 2.1 of Project Logbook
-  const [teamMembers, setTeamMembers] = useState([
+  const teamMembers = [
     {
       id: 'dharmil',
       name: 'Dharmil',
@@ -61,43 +58,7 @@ export const AboutPage: React.FC = () => {
       institution: 'EQUORA Team',
       bio: 'Films the activities of the team and edits these into a cohesive video presentation for submission; tests prototype workflows and user feedback loops.',
     },
-  ]);
-
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', role: '', institution: '', bio: '' });
-
-  const startEdit = (idx: number) => {
-    setEditingIndex(idx);
-    setEditForm({ ...teamMembers[idx] });
-  };
-
-  const saveEdit = (idx: number) => {
-    const updated = [...teamMembers];
-    updated[idx] = { ...updated[idx], ...editForm };
-    setTeamMembers(updated);
-    setEditingIndex(null);
-  };
-
-  const addTeamMember = () => {
-    const newId = `member-${Date.now()}`;
-    const newMember = {
-      id: newId,
-      name: 'New Team Member',
-      role: 'Team Contributor',
-      subroles: ['Tester'],
-      institution: 'EQUORA Team',
-      bio: 'Contributing to project development, research verification, and prototype user testing.',
-    };
-    setTeamMembers([...teamMembers, newMember]);
-    setEditingIndex(teamMembers.length);
-    setEditForm({ ...newMember });
-  };
-
-  const removeTeamMember = (idx: number) => {
-    const updated = teamMembers.filter((_, i) => i !== idx);
-    setTeamMembers(updated);
-    if (editingIndex === idx) setEditingIndex(null);
-  };
+  ];
 
   // Section 2.1 Team Roles Table from Project Logbook
   const roleBreakdownTable = [
@@ -325,7 +286,7 @@ export const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. Project Team Section (Editable Placeholders per prompt requirement) */}
+      {/* 5. Project Team Section */}
       <section className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -336,16 +297,11 @@ export const AboutPage: React.FC = () => {
               Project Team ({teamMembers.length} Members)
             </h2>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] text-slate-400 italic hidden sm:inline">Editable project profile slots</span>
-            <button
-              type="button"
-              onClick={addTeamMember}
-              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#0D192E] hover:bg-[#1E293B] rounded-xl shadow-xs transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5 text-sky-400" />
-              <span>Add Team Member</span>
-            </button>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Verified Core Team
+            </span>
           </div>
         </div>
 
@@ -353,109 +309,38 @@ export const AboutPage: React.FC = () => {
           {teamMembers.map((member, idx) => (
             <div
               key={member.id}
-              className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between"
+              className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow"
             >
-              {editingIndex === idx ? (
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <label className="text-slate-500 font-medium">Name</label>
-                    <input
-                      type="text"
-                      value={editForm.name}
-                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      className="w-full mt-1 p-2 bg-[#FAF7F2] border border-slate-200 rounded-lg text-slate-800"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-slate-500 font-medium">Role</label>
-                    <input
-                      type="text"
-                      value={editForm.role}
-                      onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                      className="w-full mt-1 p-2 bg-[#FAF7F2] border border-slate-200 rounded-lg text-slate-800"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-slate-500 font-medium">Institution</label>
-                    <input
-                      type="text"
-                      value={editForm.institution}
-                      onChange={(e) => setEditForm({ ...editForm, institution: e.target.value })}
-                      className="w-full mt-1 p-2 bg-[#FAF7F2] border border-slate-200 rounded-lg text-slate-800"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-slate-500 font-medium">Focus Area</label>
-                    <textarea
-                      value={editForm.bio}
-                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                      rows={2}
-                      className="w-full mt-1 p-2 bg-[#FAF7F2] border border-slate-200 rounded-lg text-slate-800"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      onClick={() => saveEdit(idx)}
-                      className="flex-1 py-2 bg-[#0D192E] text-white rounded-lg font-medium hover:bg-slate-800 transition-colors"
-                    >
-                      Save Changes
-                    </button>
-                    {teamMembers.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeTeamMember(idx)}
-                        className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg border border-rose-200 transition-colors"
-                        title="Remove Team Member"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#FFF5F0] text-[#0D192E] flex items-center justify-center font-serif text-lg font-bold border border-peach-200">
+                  {idx + 1}
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-2xl bg-[#FFF5F0] text-[#0D192E] flex items-center justify-center font-serif text-lg font-bold border border-peach-200">
-                    {idx + 1}
-                  </div>
 
-                  <div>
-                    <h3 className="text-base font-semibold text-[#0D192E]">{member.name}</h3>
-                    <div className="text-xs text-[#2563EB] font-medium mt-0.5">{member.role}</div>
-                    
-                    {/* Subrole tags from Project Logbook */}
-                    {member.subroles && member.subroles.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1.5">
-                        {member.subroles.map((sr) => (
-                          <span
-                            key={sr}
-                            className="text-[10px] px-2 py-0.5 rounded-md font-mono bg-slate-100 text-slate-600 border border-slate-200/80"
-                          >
-                            {sr}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="text-[11px] text-slate-400 font-mono mt-1">
-                      {member.institution}
+                <div>
+                  <h3 className="text-base font-semibold text-[#0D192E]">{member.name}</h3>
+                  <div className="text-xs text-[#2563EB] font-medium mt-0.5">{member.role}</div>
+                  
+                  {/* Subrole tags from Project Logbook */}
+                  {member.subroles && member.subroles.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {member.subroles.map((sr) => (
+                        <span
+                          key={sr}
+                          className="text-[10px] px-2 py-0.5 rounded-md font-mono bg-slate-100 text-slate-600 border border-slate-200/80"
+                        >
+                          {sr}
+                        </span>
+                      ))}
                     </div>
+                  )}
+
+                  <div className="text-[11px] text-slate-400 font-mono mt-1">
+                    {member.institution}
                   </div>
-
-                  <p className="text-xs text-slate-600 leading-relaxed">{member.bio}</p>
-
-                  <button
-                    onClick={() => startEdit(idx)}
-                    className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-[#0D192E] pt-2 transition-colors"
-                  >
-                    <Edit2 className="w-3 h-3" />
-                    <span>Edit Profile Details</span>
-                  </button>
                 </div>
-              )}
+
+                <p className="text-xs text-slate-600 leading-relaxed">{member.bio}</p>
+              </div>
             </div>
           ))}
         </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { COUNTRIES_GII_DATA, getGIIColor } from '../data/globeData';
 import { CountryGII } from '../types';
+import { useTheme } from '../context/ThemeContext';
 import {
   Search,
   RotateCcw,
@@ -72,9 +73,22 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
     },
   ];
 
-  const [activeStyleId, setActiveStyleId] = useState<string>('mapbox-streets');
+  const { isDark } = useTheme();
+  const [activeStyleId, setActiveStyleId] = useState<string>(() => isDark ? 'mapbox-dark' : 'mapbox-streets');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState<string>('All');
+
+  useEffect(() => {
+    if (isDark) {
+      if (activeStyleId === 'mapbox-streets' || activeStyleId === 'mapbox-light') {
+        setActiveStyleId('mapbox-dark');
+      }
+    } else {
+      if (activeStyleId === 'mapbox-dark') {
+        setActiveStyleId('mapbox-streets');
+      }
+    }
+  }, [isDark]);
 
   const regions = ['All', 'Europe', 'Americas', 'Asia', 'Africa', 'Middle East', 'Oceania'];
 

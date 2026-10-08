@@ -1,4 +1,36 @@
-export type PageId = 'home' | 'scan' | 'chat' | 'learn' | 'world' | 'news' | 'about';
+export type PageId = 'home' | 'scan' | 'chat' | 'learn' | 'world' | 'news' | 'report' | 'about';
+
+export type ReportCategory =
+  | 'Classroom & Textbooks'
+  | 'School Athletics & Sports'
+  | 'Workplace & Wage Parity'
+  | 'Leadership & Civic Spaces'
+  | 'Online Harassment & Digital Spaces'
+  | 'Media & Cultural Representation'
+  | 'Public Facilities & Transit'
+  | 'Other';
+
+export interface InequalityReport {
+  id: string;
+  trackingCode: string;
+  isAnonymous: boolean;
+  reporterName?: string;
+  reporterEmail?: string;
+  reporterRole?: 'Student' | 'Educator' | 'Parent' | 'Employee' | 'Researcher' | 'Community Advocate' | 'Other';
+  title: string;
+  category: ReportCategory;
+  incidentDate: string;
+  countryOrRegion: string;
+  institutionOrLocation?: string;
+  description: string;
+  impactObserved?: string;
+  evidenceAttachment?: string;
+  evidenceImageUrl?: string;
+  isPublicInLedger: boolean;
+  status: 'Received' | 'Under Pedagogical Review' | 'Verified Case Study' | 'Action Documented';
+  createdAt: string;
+  pedagogicalNotes?: string;
+}
 
 export interface AnalysisResult {
   detected: boolean;
@@ -60,6 +92,9 @@ export interface NewsArticle {
   summary: string;
   readTime: string;
   url: string;
+  directArticleUrl?: string;
+  keyFindings?: string[];
+  policyTakeaway?: string;
   featured?: boolean;
 }
 
@@ -94,5 +129,40 @@ export interface User {
   createdAt: string;
   savedScans: SavedScan[];
   bookmarkedArticleIds: string[];
+}
+
+export interface BrainTeaserPuzzle {
+  id: string;
+  title: string;
+  difficulty: 'Quick Spark' | 'Moderate Riddle' | 'Deep Mind Bender';
+  category: string;
+  riddle: string;
+  hint: string;
+  options: { id: string; text: string; isCorrect: boolean }[];
+  revealExplanation: string;
+  psychologicalInsight: string;
+  historicalOrSocialFact: string;
+}
+
+export interface WordScramblePuzzle {
+  id: string;
+  concept: string; // The correct term e.g. "MATILDA EFFECT"
+  scrambled: string;
+  category: string;
+  clue: string;
+  definition: string;
+  exampleContext: string;
+}
+
+export interface SpotTheBiasPuzzle {
+  id: string;
+  title: string;
+  subject: string;
+  gradeLevel: string;
+  rawExcerpt: string;
+  targetPhrase: string; // the phrase that embodies the bias
+  options: string[]; // 4 phrases in the excerpt
+  repairedExcerpt: string;
+  explanation: string;
 }
 
