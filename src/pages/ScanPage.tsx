@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 
 export const ScanPage: React.FC = () => {
-  const { user, saveScan, openAuthModal } = useAuth();
+  const { saveScan } = useAuth();
   const [stage, setStage] = useState<'upload' | 'processing' | 'extracted' | 'analyzing' | 'analyzed'>('upload');
   const [progressMessage, setProgressMessage] = useState<string>('Scanning page...');
   const [progressPercent, setProgressPercent] = useState<number>(0);
@@ -419,11 +419,6 @@ export const ScanPage: React.FC = () => {
 
   const handleSaveToPortfolio = () => {
     if (!analysisResult) return;
-
-    if (!user) {
-      openAuthModal();
-      return;
-    }
 
     const titleSnippet = extractedText.split('\n')[0]?.slice(0, 40) || 'Scanned Curriculum Excerpt';
 

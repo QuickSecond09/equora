@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { InequalityReport, ReportCategory } from '../types';
-import { useAuth } from '../context/AuthContext';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -41,8 +40,6 @@ const CATEGORIES: ReportCategory[] = [
 ];
 
 export const ReportPage: React.FC = () => {
-  const { user } = useAuth();
-
   // Mode: anonymous vs identified
   const [reportType, setReportType] = useState<'anonymous' | 'identified'>('anonymous');
 
@@ -57,8 +54,8 @@ export const ReportPage: React.FC = () => {
   const [isPublicInLedger, setIsPublicInLedger] = useState(true);
 
   // Identified mode fields
-  const [reporterName, setReporterName] = useState(user?.name || '');
-  const [reporterEmail, setReporterEmail] = useState(user?.email || '');
+  const [reporterName, setReporterName] = useState('');
+  const [reporterEmail, setReporterEmail] = useState('');
   const [reporterRole, setReporterRole] = useState<'Student' | 'Educator' | 'Parent' | 'Employee' | 'Researcher' | 'Community Advocate' | 'Other'>('Student');
 
   // Evidence state
@@ -110,13 +107,7 @@ export const ReportPage: React.FC = () => {
     fetchCommunityReports();
   }, []);
 
-  // Update name/email if user logs in
-  useEffect(() => {
-    if (user && reportType === 'identified') {
-      if (!reporterName) setReporterName(user.name);
-      if (!reporterEmail) setReporterEmail(user.email);
-    }
-  }, [user, reportType]);
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

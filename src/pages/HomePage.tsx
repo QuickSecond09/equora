@@ -76,7 +76,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       title: 'Turn textbook pages into readable text.',
       description: 'Upload a photo or drag a textbook page to apply optical enhancement and OCR text extraction.',
       actionText: 'Open Scanner',
-      colorClass: 'from-[#FFD8CC]/40 via-white to-white border-peach-200/60',
+      colorClass: 'from-[#FFD8CC]/35 via-white to-[#FAF7F2] dark:from-[#FF8C66]/15 dark:via-[#0F172A] dark:to-[#0B1324] border-peach-200/70 dark:border-slate-800',
       accentBg: 'bg-[#FFD8CC] text-[#0D192E]',
     },
     {
@@ -85,7 +85,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       title: 'Explore possible gender bias with AI-assisted analysis.',
       description: 'Review contextual observations on roles, representation, and phrasing with balanced pedagogical explanations.',
       actionText: 'See Analysis Pipeline',
-      colorClass: 'from-[#E0F2FE]/50 via-white to-white border-sky-200/60',
+      colorClass: 'from-[#E0F2FE]/45 via-white to-[#FAF7F2] dark:from-[#38BDF8]/15 dark:via-[#0F172A] dark:to-[#0B1324] border-sky-200/70 dark:border-slate-800',
       accentBg: 'bg-[#2563EB] text-white',
     },
     {
@@ -94,7 +94,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       title: 'Test your instincts with interactive puzzles & scenarios.',
       description: 'Solve 44 interactive challenges: 20 curriculum scenarios, cognitive mind-bender riddles, concept scrambles, and spot-the-bias puzzles.',
       actionText: 'Solve Puzzles',
-      colorClass: 'from-[#FFF1F2]/50 via-white to-white border-rose-200/60',
+      colorClass: 'from-[#FFF1F2]/45 via-white to-[#FAF7F2] dark:from-[#F43F5E]/15 dark:via-[#0F172A] dark:to-[#0B1324] border-rose-200/70 dark:border-slate-800',
       accentBg: 'bg-[#F97059] text-white',
     },
     {
@@ -103,7 +103,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       title: 'Explore gender inequality data across 178 countries.',
       description: 'Interact with our high-definition world map powered by real UNDP Gender Inequality Index benchmarks across all continents.',
       actionText: 'Explore World Map',
-      colorClass: 'from-[#0D192E]/5 via-white to-white border-slate-300/60',
+      colorClass: 'from-[#6366F1]/10 via-white to-[#FAF7F2] dark:from-[#6366F1]/15 dark:via-[#0F172A] dark:to-[#0B1324] border-indigo-200/70 dark:border-slate-800',
       accentBg: 'bg-[#0D192E] text-white',
     },
     {
@@ -112,7 +112,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       title: 'Discover recent reporting about gender inequality.',
       description: 'Read documented reporting from UNESCO, Reuters, BBC, and Nature with direct verified links and live updates.',
       actionText: 'Read Fresh News',
-      colorClass: 'from-[#FEF3C7]/40 via-white to-white border-amber-200/60',
+      colorClass: 'from-[#FEF3C7]/40 via-white to-[#FAF7F2] dark:from-[#F59E0B]/15 dark:via-[#0F172A] dark:to-[#0B1324] border-amber-200/70 dark:border-slate-800',
       accentBg: 'bg-amber-500 text-white',
     },
     {
@@ -121,7 +121,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       title: 'Report instances of inequality anonymously or verified.',
       description: 'Document classroom stereotyping, athletic disparity, or workplace bias with confidential tracking codes and community transparency.',
       actionText: 'File a Report',
-      colorClass: 'from-[#FEE2E2]/40 via-white to-white border-rose-200/60',
+      colorClass: 'from-[#FEE2E2]/40 via-white to-[#FAF7F2] dark:from-[#F97059]/15 dark:via-[#0F172A] dark:to-[#0B1324] border-rose-200/70 dark:border-slate-800',
       accentBg: 'bg-rose-500 text-white',
     },
   ];
@@ -131,16 +131,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       {/* 1. Hero Section */}
       <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <div className="max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFD8CC]/60 text-xs font-semibold text-[#0D192E] border border-peach-300/70">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFD8CC]/60 dark:bg-slate-800 text-xs font-semibold text-[#0D192E] dark:text-white border border-peach-300/70 dark:border-slate-700">
             <Sparkles className="w-3.5 h-3.5 text-[#F97059]" />
             <span>Student-Focused Curriculum Awareness</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold text-[#0D192E] tracking-tight leading-[1.1] text-balance">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold text-[#0D192E] dark:text-white tracking-tight leading-[1.1] text-balance">
             See the stories behind the pages.
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto">
             EQUORA helps students explore gender representation and possible bias in the textbooks
             and curriculum around them.
           </p>
@@ -149,7 +149,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
             <button
               onClick={() => onNavigate('scan')}
-              className="flex items-center gap-2.5 px-6 py-3.5 text-sm font-semibold text-white bg-[#0D192E] hover:bg-[#1E293B] rounded-2xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+              className="flex items-center gap-2.5 px-6 py-3.5 text-sm font-semibold text-white bg-[#0D192E] dark:bg-sky-600 hover:bg-[#1E293B] dark:hover:bg-sky-500 rounded-2xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0"
             >
               <ScanLine className="w-4 h-4 text-[#FFD8CC]" />
               <span>Scan a Page</span>
@@ -157,26 +157,26 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
             <button
               onClick={() => onNavigate('world')}
-              className="flex items-center gap-2 px-6 py-3.5 text-sm font-semibold text-[#0D192E] backdrop-blur-md bg-white/80 hover:bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow transition-all"
+              className="flex items-center gap-2 px-6 py-3.5 text-sm font-semibold text-[#0D192E] dark:text-white backdrop-blur-md bg-white/80 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl shadow-sm hover:shadow transition-all"
             >
-              <Globe2 className="w-4 h-4 text-[#2563EB]" />
+              <Globe2 className="w-4 h-4 text-[#2563EB] dark:text-sky-400" />
               <span>Explore the World</span>
             </button>
           </div>
 
           {/* Floating Glassmorphic Verification Pills */}
-          <div className="pt-3 flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-600">
-            <div className="backdrop-blur-xl bg-white/70 border border-white/80 shadow-2xs px-3.5 py-1.5 rounded-full flex items-center gap-2">
+          <div className="pt-3 flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-600 dark:text-slate-300">
+            <div className="backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 border border-white/80 dark:border-slate-700 shadow-2xs px-3.5 py-1.5 rounded-full flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-medium text-slate-800">ScanKit Image Cleaning</span>
+              <span className="font-medium text-slate-800 dark:text-slate-200">ScanKit Image Cleaning</span>
             </div>
-            <div className="backdrop-blur-xl bg-white/70 border border-white/80 shadow-2xs px-3.5 py-1.5 rounded-full flex items-center gap-2">
+            <div className="backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 border border-white/80 dark:border-slate-700 shadow-2xs px-3.5 py-1.5 rounded-full flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#2563EB]" />
-              <span className="font-medium text-slate-800">UNDP Real GII Dataset</span>
+              <span className="font-medium text-slate-800 dark:text-slate-200">UNDP Real GII Dataset</span>
             </div>
-            <div className="backdrop-blur-xl bg-white/70 border border-white/80 shadow-2xs px-3.5 py-1.5 rounded-full flex items-center gap-2">
+            <div className="backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 border border-white/80 dark:border-slate-700 shadow-2xs px-3.5 py-1.5 rounded-full flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#F97059]" />
-              <span className="font-medium text-slate-800">Contextual AI Nuance</span>
+              <span className="font-medium text-slate-800 dark:text-slate-200">Contextual AI Nuance</span>
             </div>
           </div>
         </div>
@@ -213,23 +213,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             return (
               <div
                 key={v.title}
-                className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between"
+                className="p-6 rounded-3xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow group flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 rounded-2xl bg-[#FFF5F0] text-[#F97059] group-hover:scale-105 transition-transform">
+                    <div className="p-3 rounded-2xl bg-[#FFF5F0] dark:bg-slate-700 text-[#F97059] group-hover:scale-105 transition-transform">
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-[11px] font-mono text-slate-400">0{i + 1}</span>
+                    <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">0{i + 1}</span>
                   </div>
 
-                  <span className="text-[11px] uppercase tracking-wider text-slate-400 font-medium">
+                  <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-400 font-medium">
                     {v.category}
                   </span>
-                  <h3 className="text-lg font-semibold text-[#0D192E] mt-1 mb-2.5">
+                  <h3 className="text-lg font-semibold text-[#0D192E] dark:text-white mt-1 mb-2.5">
                     {v.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     {v.desc}
                   </p>
                 </div>
@@ -245,10 +245,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           <div className="text-xs font-mono uppercase tracking-widest text-[#F97059] mb-2">
             The EQUORA Framework
           </div>
-          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-[#0D192E] tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-serif font-bold text-[#0D192E] dark:text-white tracking-tight">
             Explore EQUORA
           </h2>
-          <p className="text-sm sm:text-base text-slate-600 mt-3">
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-3">
             Five integrated experiences built for curiosity, textual scrutiny, and global context.
           </p>
         </div>
@@ -260,13 +260,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               className={`p-7 rounded-3xl bg-gradient-to-br ${card.colorClass} border shadow-sm hover:shadow-md transition-all flex flex-col justify-between group`}
             >
               <div>
-                <span className="inline-block text-[11px] font-mono tracking-wider text-slate-500 font-semibold mb-3">
+                <span className="inline-block text-[11px] font-mono tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-3">
                   {card.badge}
                 </span>
-                <h3 className="text-xl font-serif font-bold text-[#0D192E] leading-snug mb-3">
+                <h3 className="text-xl font-serif font-bold text-[#0D192E] dark:text-white leading-snug mb-3">
                   {card.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
                   {card.description}
                 </p>
               </div>
@@ -274,10 +274,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               <div>
                 <button
                   onClick={() => onNavigate(card.id)}
-                  className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-between bg-white border border-slate-200 text-[#0D192E] hover:bg-slate-50 group-hover:border-slate-300 transition-colors shadow-2xs"
+                  className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold flex items-center justify-between bg-white/95 dark:bg-slate-800/95 border border-slate-200 dark:border-slate-700 text-[#0D192E] dark:text-white hover:bg-white dark:hover:bg-slate-700 group-hover:border-slate-300 dark:group-hover:border-slate-600 transition-colors shadow-2xs"
                 >
                   <span>{card.actionText}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[#0D192E] transition-all" />
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-[#0D192E] dark:group-hover:text-white transition-all" />
                 </button>
               </div>
             </div>

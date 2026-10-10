@@ -1,8 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PageId } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Menu, X, ScanLine, User as UserIcon, LogIn, ChevronDown, Sun, Moon } from 'lucide-react';
+import {
+  Menu,
+  X,
+  ScanLine,
+  Sun,
+  Moon,
+  LogIn,
+  LogOut,
+  User as UserIcon,
+  ChevronDown,
+  ShieldCheck,
+} from 'lucide-react';
 
 interface NavbarProps {
   currentPage: PageId;
@@ -10,10 +21,12 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
-  const { user, openAuthModal, openProfileDrawer } = useAuth();
+  const { user, openAuthModal, logout } = useAuth();
   const { theme, isDark, toggleTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +34,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close user dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const navItems: { id: PageId; label: string }[] = [
@@ -37,8 +61,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const handleNavClick = (id: PageId) => {
     onNavigate(id);
     setMobileMenuOpen(false);
+    setUserDropdownOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const handleSignOut = async () => {
+    setUserDropdownOpen(false);
+    setMobileMenuOpen(false);
+    await logout();
+  };
+
+  // Safe display values
+  const displayName = user?.displayName || user?.email?.split('@')[0] || 'User';
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <header
@@ -57,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
           EQUORA
         </button>
 
-        {/* Zone 2: 4-7 Clean Text Navigation Links */}
+        {/* Zone 2: Navigation Links */}
         <nav className="hidden md:flex items-center gap-7">
           {navItems.map((item) => {
             const isActive = currentPage === item.id;
@@ -80,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
           })}
         </nav>
 
-        {/* Zone 3: Primary Actions + Theme Toggle + Glassmorphic Auth Trigger */}
+        {/* Zone 3: Primary Actions + Theme Toggle + Authentication */}
         <div className="flex items-center gap-2">
           {/* Theme Toggle Button */}
           <button
@@ -107,27 +142,65 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <span className="sm:hidden">Scan</span>
           </button>
 
-          {/* User Sign In / Profile Button (Glassmorphic) */}
+          {/* Authentication Button: Sign In (Signed Out) vs Account Dropdown (Signed In) */}
           {user ? (
-            <button
-              onClick={openProfileDrawer}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl backdrop-blur-md bg-white/70 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs transition-all text-xs text-slate-800 dark:text-slate-100"
-              title="Open Account & Saved Scans"
-            >
-              <div
-                className={`w-6 h-6 rounded-lg bg-gradient-to-br ${user.avatarColor} text-[#0D192E] font-bold text-[11px] flex items-center justify-center`}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                aria-expanded={userDropdownOpen}
+                aria-haspopup="true"
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl backdrop-blur-md bg-white/80 hover:bg-white dark:bg-slate-800/90 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs transition-all text-xs text-slate-800 dark:text-slate-100 cursor-pointer focus:outline-none"
               >
-                {user.name.charAt(0)}
-              </div>
-              <span className="hidden lg:inline font-medium max-w-[90px] truncate">
-                {user.name.split(' ')[0]}
-              </span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
-            </button>
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt={displayName}
+                    className="w-6 h-6 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#2563EB] to-[#7C3AED] text-white font-bold text-[11px] flex items-center justify-center shadow-xs">
+                    {initial}
+                  </div>
+                )}
+                <span className="hidden lg:inline font-medium max-w-[100px] truncate">
+                  {displayName}
+                </span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
+
+              {/* Account Dropdown Menu */}
+              {userDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-64 backdrop-blur-2xl bg-white/95 dark:bg-[#0B1324]/95 border border-slate-200/90 dark:border-slate-800 rounded-2xl shadow-xl p-3 z-50 animate-fade-in ring-1 ring-black/5 dark:ring-white/10">
+                  <div className="pb-3 mb-2 border-b border-slate-100 dark:border-slate-800/80 px-2">
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold mb-1">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Authenticated</span>
+                    </div>
+                    <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      {displayName}
+                    </div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                      {user.email || 'Google Account'}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="w-full flex items-center gap-2 px-2.5 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <button
+              type="button"
               onClick={() => openAuthModal('login')}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-[#0D192E] dark:hover:text-white rounded-xl backdrop-blur-md bg-white/60 hover:bg-white dark:bg-slate-800/70 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-[#0D192E] dark:hover:text-white rounded-xl backdrop-blur-md bg-white/70 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700/80 shadow-2xs transition-all cursor-pointer focus:outline-none"
             >
               <LogIn className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               <span>Sign In</span>
@@ -179,26 +252,34 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             </button>
 
             {user ? (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  openProfileDrawer();
-                }}
-                className="w-full py-2 px-3 text-xs font-semibold text-slate-800 dark:text-slate-100 bg-white/80 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between"
-              >
-                <span>Account: {user.name}</span>
-                <span className="text-[11px] text-[#2563EB] dark:text-sky-400">View Profile</span>
-              </button>
+              <div className="p-3 bg-white/80 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-bold text-slate-800 dark:text-slate-100">{displayName}</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
+                      {user.email || 'Google Account'}
+                    </div>
+                  </div>
+                  <div className="w-2 h-2 rounded-full bg-emerald-500" title="Active session" />
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full py-1.5 px-3 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 rounded-lg flex items-center justify-center gap-1.5"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
             ) : (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   openAuthModal('login');
                 }}
-                className="w-full py-2 px-3 text-xs font-semibold text-slate-800 dark:text-slate-100 bg-white/80 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-1.5"
+                className="w-full py-2 px-3 text-xs font-semibold text-slate-800 dark:text-slate-100 bg-white/80 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                <span>Log In / Sign Up</span>
+                <span>Sign In / Create Account</span>
               </button>
             )}
           </div>
@@ -207,4 +288,3 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
     </header>
   );
 };
-

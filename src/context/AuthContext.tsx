@@ -1,347 +1,112 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, SavedScan } from '../types';
+import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
+import {
+  auth,
+  isFirebaseConfigured,
+  signInWithGoogleFlow,
+  signInWithEmailFlow,
+  signUpWithEmailFlow,
+  sendPasswordResetFlow,
+  signOutFlow,
+  checkRedirectAuth,
+  getFriendlyAuthErrorMessage,
+} from '../lib/firebase';
+import { SavedScan } from '../types';
 
-interface AuthContextType {
-  user: User | null;
+export interface AuthContextType {
+  // Real Firebase User
+  user: FirebaseUser | null;
   isLoading: boolean;
-  login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
-  signup: (formData: {
-    name: string;
-    email: string;
-    password?: string;
-    role: 'student' | 'educator';
-    schoolOrOrg?: string;
-    gradeLevel?: string;
-  }) => Promise<{ success: boolean; error?: string }>;
-  demoLogin: (role: 'student' | 'educator') => Promise<void>;
-  oauthLogin: (provider: 'google' | 'microsoft') => Promise<void>;
-  logout: () => void;
+  isFirebaseReady: boolean;
+
+  // Modal State
+  isAuthModalOpen: boolean;
+  authModalMode: 'login' | 'signup' | 'forgot';
+  openAuthModal: (mode?: 'login' | 'signup' | 'forgot') => void;
+  closeAuthModal: () => void;
+
+  // Real Authentication Methods
+  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  loginWithEmail: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
+  signupWithEmail: (name: string, email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+
+  // Retain Bookmarking & Saved Scans for Existing Platform Features
+  savedScans: SavedScan[];
   saveScan: (scan: Omit<SavedScan, 'id' | 'date'>) => void;
   removeScan: (id: string) => void;
   toggleBookmark: (articleId: string) => void;
   isBookmarked: (articleId: string) => boolean;
-
-  // Modal & Drawer State
-  isAuthModalOpen: boolean;
-  authModalMode: 'login' | 'signup';
-  openAuthModal: (mode?: 'login' | 'signup') => void;
-  closeAuthModal: () => void;
-  isProfileDrawerOpen: boolean;
-  openProfileDrawer: () => void;
-  closeProfileDrawer: () => void;
+  bookmarkedArticleIds: string[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'equora_user_session';
+const BOOKMARKS_STORAGE_KEY = 'equora_bookmarked_articles';
+const SCANS_STORAGE_KEY = 'equora_saved_scans';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
-  const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState<boolean>(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup' | 'forgot'>('login');
 
-  // Rehydrate session from localStorage
-  useEffect(() => {
+  // Bookmarks and Portfolio persistence (works whether signed in or as guest)
+  const [bookmarkedArticleIds, setBookmarkedArticleIds] = useState<string[]>(() => {
     try {
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const stored = localStorage.getItem(BOOKMARKS_STORAGE_KEY);
       if (stored) {
-        setUser(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {
-      console.warn('Failed to load user session:', e);
-    } finally {
-      setIsLoading(false);
+      console.warn('Failed to load bookmarks:', e);
     }
+    return ['news-unesco-textbooks'];
+  });
+
+  const [savedScans, setSavedScans] = useState<SavedScan[]>(() => {
+    try {
+      const stored = localStorage.getItem(SCANS_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {
+      console.warn('Failed to load saved scans:', e);
+    }
+    return [];
+  });
+
+  // Check for redirect result on app load
+  useEffect(() => {
+    checkRedirectAuth().catch((err) => console.warn('Redirect auth notice:', err));
   }, []);
 
-  const saveUserSession = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(userData));
-  };
-
-  const login = async (email: string, pass: string) => {
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: pass }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        return { success: false, error: data.error || 'Login failed.' };
-      }
-
-      const data = await res.json();
-      const fullUser: User = {
-        ...data.user,
-        savedScans: data.user.savedScans || [],
-        bookmarkedArticleIds: data.user.bookmarkedArticleIds || [],
-      };
-
-      saveUserSession(fullUser);
-      setIsAuthModalOpen(false);
-      return { success: true };
-    } catch (_err: any) {
-      // Offline / fallback session if network request fails
-      const fallbackUser: User = {
-        id: `usr-${Date.now()}`,
-        name: email.split('@')[0] || 'EQUORA Scholar',
-        email,
-        role: 'student',
-        schoolOrOrg: 'Riverdale High School',
-        gradeLevel: 'Grade 10',
-        avatarColor: 'from-amber-400 to-rose-400',
-        createdAt: new Date().toISOString().split('T')[0],
-        savedScans: [],
-        bookmarkedArticleIds: ['news-unesco-textbooks'],
-      };
-      saveUserSession(fallbackUser);
-      setIsAuthModalOpen(false);
-      return { success: true };
-    }
-  };
-
-  const signup = async (formData: {
-    name: string;
-    email: string;
-    password?: string;
-    role: 'student' | 'educator';
-    schoolOrOrg?: string;
-    gradeLevel?: string;
-  }) => {
-    try {
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        return { success: false, error: data.error || 'Sign up failed.' };
-      }
-
-      const data = await res.json();
-      const fullUser: User = {
-        ...data.user,
-        savedScans: [],
-        bookmarkedArticleIds: [],
-      };
-
-      saveUserSession(fullUser);
-      setIsAuthModalOpen(false);
-      return { success: true };
-    } catch (_err: any) {
-      const fallbackUser: User = {
-        id: `usr-${Date.now()}`,
-        name: formData.name || 'EQUORA Scholar',
-        email: formData.email,
-        role: formData.role,
-        schoolOrOrg: formData.schoolOrOrg || 'Riverdale High School',
-        gradeLevel: formData.gradeLevel || (formData.role === 'student' ? 'Grade 10' : 'Faculty'),
-        avatarColor: formData.role === 'student' ? 'from-amber-400 to-rose-400' : 'from-indigo-500 to-sky-400',
-        createdAt: new Date().toISOString().split('T')[0],
-        savedScans: [],
-        bookmarkedArticleIds: [],
-      };
-      saveUserSession(fallbackUser);
-      setIsAuthModalOpen(false);
-      return { success: true };
-    }
-  };
-
-  const demoLogin = async (role: 'student' | 'educator') => {
-    let demoUser: User;
-    try {
-      const res = await fetch('/api/auth/demo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role }),
-      });
-
-      const data = await res.json();
-      demoUser = {
-        ...data.user,
-        savedScans: [
-          {
-            id: 'scan-demo-1',
-            date: 'Yesterday, 3:15 PM',
-            title: 'High School Business Math Problem 14.2',
-            textSnippet: 'A corporate CEO manages an enterprise... his executive assistant Sarah...',
-            category: 'Occupational stereotypes',
-            status: 'Possible gender bias detected',
-            confidence: 'High',
-          },
-        ],
-        bookmarkedArticleIds: ['news-unesco-textbooks', 'news-ap-parliament-parity'],
-      };
-    } catch (_err) {
-      demoUser = {
-        id: `usr-demo-${Date.now()}`,
-        name: role === 'student' ? 'Maya Lin' : 'Dr. Elena Rostova',
-        email: role === 'student' ? 'student@equora.edu' : 'elena.rostova@school.edu',
-        role,
-        schoolOrOrg: role === 'student' ? 'Riverdale High School' : 'Department of Social Studies',
-        gradeLevel: role === 'student' ? 'Grade 10' : 'Faculty',
-        avatarColor: role === 'student' ? 'from-amber-400 to-rose-400' : 'from-indigo-500 to-sky-400',
-        createdAt: new Date().toISOString().split('T')[0],
-        savedScans: [
-          {
-            id: 'scan-demo-1',
-            date: 'Yesterday, 3:15 PM',
-            title: 'High School Business Math Problem 14.2',
-            textSnippet: 'A corporate CEO manages an enterprise... his executive assistant Sarah...',
-            category: 'Occupational stereotypes',
-            status: 'Possible gender bias detected',
-            confidence: 'High',
-          },
-        ],
-        bookmarkedArticleIds: ['news-unesco-textbooks', 'news-ap-parliament-parity'],
-      };
-    }
-
-    saveUserSession(demoUser);
-    setIsAuthModalOpen(false);
-  };
-
-  const oauthLogin = async (provider: 'google' | 'microsoft') => {
-    const email =
-      provider === 'google'
-        ? 'itstapan7@gmail.com'
-        : 'educator@microsoftedu.com';
-
-    const name =
-      provider === 'google'
-        ? 'Google Account (itstapan7)'
-        : 'Microsoft 365 Educator';
-
-    let oauthUser: User;
-    try {
-      const res = await fetch('/api/auth/oauth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          provider,
-          email,
-          name,
-          role: provider === 'microsoft' ? 'educator' : 'student',
-          schoolOrOrg:
-            provider === 'google'
-              ? 'Google Workspace for Education'
-              : 'Metro High School (Office 365)',
-        }),
-      });
-
-      const data = await res.json();
-      oauthUser = {
-        ...data.user,
-        savedScans: [
-          {
-            id: 'scan-oauth-init',
-            date: 'Today, 2:40 PM',
-            title: 'Modern Cellular Biology — Photo 51 & Dr. Franklin',
-            textSnippet: 'Dr. Rosalind Franklin, an expert biophysicist at King’s College London...',
-            category: 'Balanced representation',
-            status: 'No obvious gender bias detected',
-            confidence: 'High',
-          },
-        ],
-        bookmarkedArticleIds: ['news-unesco-textbooks', 'news-bbc-sports-parity'],
-      };
-    } catch (_err) {
-      oauthUser = {
-        id: `usr-${provider}-${Date.now()}`,
-        name,
-        email,
-        role: provider === 'microsoft' ? 'educator' : 'student',
-        schoolOrOrg: provider === 'google' ? 'Google Workspace for Education' : 'Metro High School (Office 365)',
-        gradeLevel: provider === 'microsoft' ? 'Faculty' : 'Grade 11',
-        avatarColor: provider === 'google' ? 'from-rose-400 to-amber-400' : 'from-blue-500 to-sky-400',
-        createdAt: new Date().toISOString().split('T')[0],
-        savedScans: [
-          {
-            id: 'scan-oauth-init',
-            date: 'Today, 2:40 PM',
-            title: 'Modern Cellular Biology — Photo 51 & Dr. Franklin',
-            textSnippet: 'Dr. Rosalind Franklin, an expert biophysicist at King’s College London...',
-            category: 'Balanced representation',
-            status: 'No obvious gender bias detected',
-            confidence: 'High',
-          },
-        ],
-        bookmarkedArticleIds: ['news-unesco-textbooks', 'news-bbc-sports-parity'],
-      };
-    }
-
-    saveUserSession(oauthUser);
-    setIsAuthModalOpen(false);
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-    setIsProfileDrawerOpen(false);
-  };
-
-  const saveScan = (scan: Omit<SavedScan, 'id' | 'date'>) => {
-    if (!user) {
-      setIsAuthModalOpen(true);
+  // Listen for real Firebase authentication state changes
+  useEffect(() => {
+    if (!auth) {
+      setIsLoading(false);
       return;
     }
 
-    const newScan: SavedScan = {
-      ...scan,
-      id: `scan-${Date.now()}`,
-      date: new Date().toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-    };
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (firebaseUser) => {
+        setUser(firebaseUser);
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error('Auth state change error:', error);
+        setIsLoading(false);
+      }
+    );
 
-    const updatedUser: User = {
-      ...user,
-      savedScans: [newScan, ...user.savedScans],
-    };
+    return () => unsubscribe();
+  }, []);
 
-    saveUserSession(updatedUser);
-  };
-
-  const removeScan = (id: string) => {
-    if (!user) return;
-    const updatedUser: User = {
-      ...user,
-      savedScans: user.savedScans.filter((s) => s.id !== id),
-    };
-    saveUserSession(updatedUser);
-  };
-
-  const toggleBookmark = (articleId: string) => {
-    if (!user) {
-      setIsAuthModalOpen(true);
-      return;
-    }
-
-    const exists = user.bookmarkedArticleIds.includes(articleId);
-    const updatedUser: User = {
-      ...user,
-      bookmarkedArticleIds: exists
-        ? user.bookmarkedArticleIds.filter((id) => id !== articleId)
-        : [...user.bookmarkedArticleIds, articleId],
-    };
-
-    saveUserSession(updatedUser);
-  };
-
-  const isBookmarked = (articleId: string) => {
-    return user ? user.bookmarkedArticleIds.includes(articleId) : false;
-  };
-
-  const openAuthModal = (mode: 'login' | 'signup' = 'login') => {
+  const openAuthModal = (mode: 'login' | 'signup' | 'forgot' = 'login') => {
     setAuthModalMode(mode);
     setIsAuthModalOpen(true);
   };
@@ -350,12 +115,110 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthModalOpen(false);
   };
 
-  const openProfileDrawer = () => {
-    setIsProfileDrawerOpen(true);
+  const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const authenticatedUser = await signInWithGoogleFlow();
+      setUser(authenticatedUser);
+      setIsAuthModalOpen(false);
+      return { success: true };
+    } catch (error: any) {
+      const msg = getFriendlyAuthErrorMessage(error);
+      return { success: false, error: msg };
+    }
   };
 
-  const closeProfileDrawer = () => {
-    setIsProfileDrawerOpen(false);
+  const loginWithEmail = async (email: string, pass: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const authenticatedUser = await signInWithEmailFlow(email, pass);
+      setUser(authenticatedUser);
+      setIsAuthModalOpen(false);
+      return { success: true };
+    } catch (error: any) {
+      const msg = getFriendlyAuthErrorMessage(error);
+      return { success: false, error: msg };
+    }
+  };
+
+  const signupWithEmail = async (
+    name: string,
+    email: string,
+    pass: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const newUser = await signUpWithEmailFlow(name, email, pass);
+      setUser(newUser);
+      setIsAuthModalOpen(false);
+      return { success: true };
+    } catch (error: any) {
+      const msg = getFriendlyAuthErrorMessage(error);
+      return { success: false, error: msg };
+    }
+  };
+
+  const resetPassword = async (email: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      await sendPasswordResetFlow(email);
+      return { success: true };
+    } catch (error: any) {
+      const msg = getFriendlyAuthErrorMessage(error);
+      return { success: false, error: msg };
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      await signOutFlow();
+      setUser(null);
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
+  };
+
+  const toggleBookmark = (articleId: string) => {
+    setBookmarkedArticleIds((prev) => {
+      const exists = prev.includes(articleId);
+      const next = exists ? prev.filter((id) => id !== articleId) : [...prev, articleId];
+      try {
+        localStorage.setItem(BOOKMARKS_STORAGE_KEY, JSON.stringify(next));
+      } catch (e) {
+        console.warn('Failed to save bookmark:', e);
+      }
+      return next;
+    });
+  };
+
+  const isBookmarked = (articleId: string) => {
+    return bookmarkedArticleIds.includes(articleId);
+  };
+
+  const saveScan = (scan: Omit<SavedScan, 'id' | 'date'>) => {
+    const newScan: SavedScan = {
+      ...scan,
+      id: `scan-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      date: new Date().toISOString().split('T')[0],
+    };
+
+    setSavedScans((prev) => {
+      const next = [newScan, ...prev];
+      try {
+        localStorage.setItem(SCANS_STORAGE_KEY, JSON.stringify(next));
+      } catch (e) {
+        console.warn('Failed to save scan:', e);
+      }
+      return next;
+    });
+  };
+
+  const removeScan = (id: string) => {
+    setSavedScans((prev) => {
+      const next = prev.filter((s) => s.id !== id);
+      try {
+        localStorage.setItem(SCANS_STORAGE_KEY, JSON.stringify(next));
+      } catch (e) {
+        console.warn('Failed to remove scan:', e);
+      }
+      return next;
+    });
   };
 
   return (
@@ -363,22 +226,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         isLoading,
-        login,
-        signup,
-        demoLogin,
-        oauthLogin,
-        logout,
-        saveScan,
-        removeScan,
-        toggleBookmark,
-        isBookmarked,
+        isFirebaseReady: isFirebaseConfigured,
         isAuthModalOpen,
         authModalMode,
         openAuthModal,
         closeAuthModal,
-        isProfileDrawerOpen,
-        openProfileDrawer,
-        closeProfileDrawer,
+        loginWithGoogle,
+        loginWithEmail,
+        signupWithEmail,
+        resetPassword,
+        logout,
+        savedScans,
+        saveScan,
+        removeScan,
+        toggleBookmark,
+        isBookmarked,
+        bookmarkedArticleIds,
       }}
     >
       {children}

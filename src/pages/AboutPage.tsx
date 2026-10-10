@@ -201,7 +201,7 @@ export const AboutPage: React.FC = () => {
           </h2>
         </div>
 
-        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#FFF5F0]/70 via-white to-sky-50/50 border border-peach-200 space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed shadow-sm">
+        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#FFF5F0]/70 via-white to-sky-50/50 dark:from-[#0E1729] dark:via-[#0F172A] dark:to-[#0B1324] border border-peach-200 dark:border-slate-800 space-y-4 text-sm sm:text-base text-slate-700 dark:text-slate-200 leading-relaxed shadow-sm">
           <p>
             EQUORA was conceived by students and educators who noticed a gap between high-level
             academic discussions of gender equality and the everyday realities of the classroom.

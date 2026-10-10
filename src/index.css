@@ -108,6 +108,27 @@ html.dark .bg-slate-100 {
   background-color: #162238;
 }
 
+/* Dark mode gradient stops: ensure gradients don't wash out into bright silver */
+html.dark .via-white,
+html.dark .via-white\/90,
+html.dark .via-white\/80,
+html.dark .via-white\/70 {
+  --tw-gradient-via: #0F172A !important;
+  --tw-gradient-stops: var(--tw-gradient-from), #0F172A, var(--tw-gradient-to) !important;
+}
+
+html.dark .to-white,
+html.dark .to-white\/90,
+html.dark .to-white\/80 {
+  --tw-gradient-to: #0B1324 !important;
+}
+
+html.dark .to-sky-50\/50,
+html.dark .to-\[\#E0F2FE\]\/50,
+html.dark .to-\[\#F0F7FF\]\/90 {
+  --tw-gradient-to: #0E1A33 !important;
+}
+
 html.dark .text-\[\#0D192E\] {
   color: #F8FAFC;
 }

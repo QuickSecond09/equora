@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 
 export const NewsPage: React.FC = () => {
-  const { user, isBookmarked, toggleBookmark, openAuthModal } = useAuth();
+  const { isBookmarked, toggleBookmark } = useAuth();
   const [articles, setArticles] = useState<NewsArticle[]>(NEWS_ARTICLES);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -89,11 +89,7 @@ export const NewsPage: React.FC = () => {
   const handleBookmarkClick = (e: React.MouseEvent, articleId: string) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!user) {
-      openAuthModal('login');
-    } else {
-      toggleBookmark(articleId);
-    }
+    toggleBookmark(articleId);
   };
 
   return (
@@ -168,7 +164,7 @@ export const NewsPage: React.FC = () => {
 
       {/* 3. Featured Story Card with Glassmorphic Gradient */}
       {featuredArticle && (
-        <section className="backdrop-blur-xl bg-gradient-to-br from-[#FFF5F0]/85 via-white/90 to-[#E0F2FE]/50 rounded-3xl p-6 sm:p-10 border border-white/80 shadow-md relative overflow-hidden group">
+        <section className="backdrop-blur-xl bg-gradient-to-br from-[#FFF5F0]/85 via-white/90 to-[#E0F2FE]/50 dark:from-[#0E1729] dark:via-[#0F172A] dark:to-[#0B1324] rounded-3xl p-6 sm:p-10 border border-white/80 dark:border-slate-800 shadow-md relative overflow-hidden group">
           <div className="max-w-4xl space-y-4 relative z-10">
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
               <div className="flex items-center gap-2">

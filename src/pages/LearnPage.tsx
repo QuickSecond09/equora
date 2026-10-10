@@ -471,7 +471,7 @@ export const LearnPage: React.FC = () => {
 
             {/* Explanation Drawer after selection */}
             {isScenarioAnswered && (
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FFF5F0]/70 via-white to-sky-50/50 border border-peach-200 space-y-4 animate-slide-up">
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-[#FFF5F0]/70 via-white to-sky-50/50 dark:from-[#0E1729] dark:via-[#0F172A] dark:to-[#0B1324] border border-peach-200 dark:border-slate-800 space-y-4 animate-slide-up">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-[#0D192E]">
                     Curriculum Analysis:
@@ -1059,7 +1059,7 @@ export const LearnPage: React.FC = () => {
 
             {/* Repaired Excerpt & Breakdown */}
             {isSpotAnswered && (
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-50/70 via-white to-sky-50/50 border border-emerald-200 space-y-4 animate-slide-up">
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-50/70 via-white to-sky-50/50 dark:from-emerald-950/40 dark:via-[#0F172A] dark:to-[#0B1324] border border-emerald-200 dark:border-emerald-800 space-y-4 animate-slide-up">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-600" />
                   <span className="text-xs font-bold uppercase tracking-wider text-emerald-900">

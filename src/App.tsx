@@ -5,7 +5,6 @@ import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { AuthModal } from './components/AuthModal';
-import { UserProfileDrawer } from './components/UserProfileDrawer';
 import { HomePage } from './pages/HomePage';
 import { ScanPage } from './pages/ScanPage';
 import { ChatPage } from './pages/ChatPage';
@@ -60,9 +59,8 @@ export default function App() {
           {/* Platform Editorial Footer */}
           <Footer onNavigate={navigateTo} />
 
-          {/* Glassmorphic Global Modals */}
+          {/* Authentication Modal */}
           <AuthModal />
-          <UserProfileDrawer />
         </div>
       </AuthProvider>
     </ThemeProvider>

@@ -5,7 +5,6 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import Tesseract from 'tesseract.js';
-import googleOAuthHandler from './oauth.js';
 
 dotenv.config();
 
@@ -77,118 +76,7 @@ async function callGeminiModel(contents: any, config?: any) {
   return null;
 }
 
-// -------------------------------------------------------------
-// In-memory Auth store for sessions & users
-// -------------------------------------------------------------
-interface UserRecord {
-  id: string;
-  name: string;
-  email: string;
-  password?: string;
-  role: 'student' | 'educator';
-  schoolOrOrg?: string;
-  gradeLevel?: string;
-  avatarColor: string;
-  createdAt: string;
-}
 
-const USERS: UserRecord[] = [
-  {
-    id: 'usr-student-1',
-    name: 'Maya Lin',
-    email: 'student@equora.edu',
-    password: 'password123',
-    role: 'student',
-    gradeLevel: 'Grade 10',
-    schoolOrOrg: 'Riverdale High School',
-    avatarColor: 'from-amber-300 to-rose-400',
-    createdAt: '2026-09-15',
-  },
-  {
-    id: 'usr-educator-1',
-    name: 'Dr. Arthur Chen',
-    email: 'educator@equora.edu',
-    password: 'password123',
-    role: 'educator',
-    schoolOrOrg: 'Oakridge District Curriculum Board',
-    avatarColor: 'from-blue-400 to-indigo-600',
-    createdAt: '2026-08-20',
-  },
-];
-
-// POST /api/auth/login
-app.post('/api/auth/login', (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password are required.' });
-    return;
-  }
-
-  const user = USERS.find((u) => u.email.toLowerCase() === email.toLowerCase());
-  if (!user || user.password !== password) {
-    res.status(401).json({ error: 'Invalid email or password.' });
-    return;
-  }
-
-  const { password: _, ...userSafe } = user;
-  res.json({
-    token: `eq-tok-${user.id}-${Date.now()}`,
-    user: userSafe,
-  });
-});
-
-// POST /api/auth/signup
-app.post('/api/auth/signup', (req: Request, res: Response) => {
-  const { name, email, password, role, schoolOrOrg, gradeLevel } = req.body;
-  if (!name || !email || !password) {
-    res.status(400).json({ error: 'Name, email, and password are required.' });
-    return;
-  }
-
-  const existing = USERS.find((u) => u.email.toLowerCase() === email.toLowerCase());
-  if (existing) {
-    res.status(409).json({ error: 'An account with this email already exists.' });
-    return;
-  }
-
-  const newUser: UserRecord = {
-    id: `usr-${Date.now()}`,
-    name,
-    email,
-    password,
-    role: role === 'educator' ? 'educator' : 'student',
-    schoolOrOrg: schoolOrOrg || 'EQUORA Learning Community',
-    gradeLevel: gradeLevel || (role === 'educator' ? 'Faculty' : 'High School'),
-    avatarColor: role === 'educator' ? 'from-blue-400 to-indigo-600' : 'from-amber-300 to-rose-400',
-    createdAt: new Date().toISOString().split('T')[0],
-  };
-
-  USERS.push(newUser);
-
-  const { password: _, ...userSafe } = newUser;
-  res.status(201).json({
-    token: `eq-tok-${newUser.id}-${Date.now()}`,
-    user: userSafe,
-  });
-});
-
-// POST /api/auth/demo
-app.post('/api/auth/demo', (req: Request, res: Response) => {
-  const { role } = req.body;
-  const targetEmail = role === 'educator' ? 'educator@equora.edu' : 'student@equora.edu';
-  const user = USERS.find((u) => u.email === targetEmail) || USERS[0];
-  const { password: _, ...userSafe } = user;
-
-  res.json({
-    token: `eq-tok-${user.id}-${Date.now()}`,
-    user: userSafe,
-  });
-});
-
-// GET /api/auth/oauth starts Google sign-in and handles its callback/session handoff.
-app.all('/api/auth/oauth', (req: Request, res: Response) => {
-  void googleOAuthHandler(req, res);
-});
 
 // -------------------------------------------------------------
 // POST /api/ocr
