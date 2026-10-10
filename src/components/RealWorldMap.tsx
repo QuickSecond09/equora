@@ -301,7 +301,7 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
   return (
     <div className="w-full space-y-4">
       {/* Top Filter & Search Controls Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#0F172A] p-3.5 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs">
         {/* Region Pills */}
         <div className="flex flex-wrap items-center gap-1.5">
           {regions.map((reg) => (
@@ -309,10 +309,10 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
               key={reg}
               type="button"
               onClick={() => handleSelectRegion(reg)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 selectedRegion === reg
-                  ? 'bg-[#0D192E] text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-black'
+                  ? 'bg-[#0D192E] dark:bg-[#2563EB] text-white shadow-xs'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-black dark:hover:text-white'
               }`}
             >
               {reg}
@@ -324,27 +324,27 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
         <div className="flex items-center gap-2">
           {/* Quick Search */}
           <form onSubmit={handleSearchSubmit} className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search country & Enter..."
-              className="pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#2563EB] w-44 sm:w-56"
+              className="pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-[#0B1324] border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-xl focus:bg-white dark:focus:bg-[#0F172A] focus:outline-none focus:ring-1 focus:ring-[#2563EB] w-44 sm:w-56"
             />
           </form>
 
           {/* Style Selector Dropdown */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1">
-            <Layers className="w-3.5 h-3.5 text-[#2563EB]" />
+          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-[#0B1324] border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1">
+            <Layers className="w-3.5 h-3.5 text-[#2563EB] dark:text-sky-400" />
             <select
               value={activeStyleId}
               onChange={(e) => setActiveStyleId(e.target.value)}
-              className="text-xs bg-transparent text-slate-700 outline-none cursor-pointer"
+              className="text-xs bg-transparent text-slate-700 dark:text-slate-200 outline-none cursor-pointer"
               title="Switch Map Style"
             >
               {mapStyles.map((style) => (
-                <option key={style.id} value={style.id}>
+                <option key={style.id} value={style.id} className="dark:bg-[#0F172A] dark:text-slate-200">
                   {style.name}
                 </option>
               ))}
@@ -355,7 +355,7 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
           <button
             type="button"
             onClick={handleResetView}
-            className="p-2 text-slate-600 hover:text-black hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors"
+            className="p-2 text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
             title="Reset to Full World View"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -364,28 +364,28 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
       </div>
 
       {/* Real Interactive Mapbox World Map Container */}
-      <div className="relative w-full h-[580px] rounded-3xl overflow-hidden border border-slate-200/90 shadow-lg bg-slate-100">
+      <div className="relative w-full h-[580px] rounded-3xl overflow-hidden border border-slate-200/90 dark:border-slate-800 shadow-lg bg-slate-100 dark:bg-[#070D18]">
         <div ref={mapContainerRef} className="w-full h-full z-0" />
 
         {/* Floating Active Country Card Overlay in Top-Left */}
         {selectedCountry && (
-          <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-md border border-slate-200/90 p-4 rounded-2xl shadow-xl max-w-sm animate-fade-in pointer-events-auto">
+          <div className="absolute top-4 left-4 z-10 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 p-4 rounded-2xl shadow-xl max-w-sm animate-fade-in pointer-events-auto">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-[#2563EB] font-semibold">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#2563EB] dark:text-sky-400 font-semibold">
                   {selectedCountry.region} Region
                 </span>
-                <h3 className="font-serif font-bold text-lg text-[#0D192E]">
+                <h3 className="font-serif font-bold text-lg text-[#0D192E] dark:text-white">
                   {selectedCountry.name}
                 </h3>
               </div>
-              <span className="font-mono text-xs font-bold bg-[#0D192E] text-white px-2.5 py-1 rounded-xl">
+              <span className="font-mono text-xs font-bold bg-[#0D192E] dark:bg-[#1E293B] text-white px-2.5 py-1 rounded-xl">
                 Rank #{selectedCountry.rank}
               </span>
             </div>
 
             <div className="flex items-center gap-2 mt-2 text-xs">
-              <span className="text-slate-500">GII Score:</span>
+              <span className="text-slate-500 dark:text-slate-400">GII Score:</span>
               <span
                 className="font-mono font-bold text-sm"
                 style={{ color: getGIIColor(selectedCountry.gii) }}
@@ -393,7 +393,7 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
                 {selectedCountry.gii.toFixed(3)}
               </span>
               <span className="text-slate-400">·</span>
-              <span className="text-slate-600 font-medium">
+              <span className="text-slate-600 dark:text-slate-300 font-medium">
                 {selectedCountry.gii < 0.1
                   ? 'Very High Equality'
                   : selectedCountry.gii < 0.35
@@ -402,33 +402,33 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
               </span>
             </div>
 
-            <p className="text-xs text-slate-600 mt-2 line-clamp-3 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 line-clamp-3 leading-relaxed">
               {selectedCountry.explanation}
             </p>
           </div>
         )}
 
         {/* Mapbox Engine Badge in Top-Right */}
-        <div className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 text-[11px] font-semibold text-slate-700 shadow-xs flex items-center gap-1.5 pointer-events-none">
-          <Sparkles className="w-3.5 h-3.5 text-[#2563EB]" />
+        <div className="absolute top-4 right-4 z-10 bg-white/90 dark:bg-[#0F172A]/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-[11px] font-semibold text-slate-700 dark:text-slate-200 shadow-xs flex items-center gap-1.5 pointer-events-none">
+          <Sparkles className="w-3.5 h-3.5 text-[#2563EB] dark:text-sky-400" />
           <span>Mapbox Cartography Engine</span>
         </div>
 
         {/* Floating Controls Helper in Bottom-Left */}
-        <div className="absolute bottom-4 left-4 z-10 bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-center gap-2 shadow-sm pointer-events-none">
-          <MapPin className="w-4 h-4 text-[#2563EB]" />
+        <div className="absolute bottom-4 left-4 z-10 bg-white/90 dark:bg-[#0F172A]/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2 shadow-sm pointer-events-none">
+          <MapPin className="w-4 h-4 text-[#2563EB] dark:text-sky-400" />
           <span>Click any marker to inspect country metrics & zoom in</span>
         </div>
       </div>
 
       {/* Color Scale Legend */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2">
+      <div className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 shadow-2xs space-y-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold text-slate-800 flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5 text-[#2563EB]" />
+          <span className="font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+            <Info className="w-3.5 h-3.5 text-[#2563EB] dark:text-sky-400" />
             <span>Gender Inequality Index (GII) Color Scale</span>
           </span>
-          <span className="text-[11px] font-mono text-slate-400">
+          <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
             Lower score = Higher gender equality
           </span>
         </div>
@@ -436,16 +436,16 @@ export const RealWorldMap: React.FC<RealWorldMapProps> = ({
         {/* Color Gradient Strip */}
         <div className="w-full h-3 rounded-full bg-gradient-to-r from-[#2563EB] via-[#FDBA74] to-[#EF4444] shadow-inner" />
 
-        <div className="flex justify-between items-center text-[11px] text-slate-500 pt-0.5 font-mono">
-          <span className="flex items-center gap-1 text-[#2563EB] font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />
+        <div className="flex justify-between items-center text-[11px] text-slate-500 dark:text-slate-400 pt-0.5 font-mono">
+          <span className="flex items-center gap-1 text-[#2563EB] dark:text-sky-400 font-semibold">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB] dark:bg-sky-400" />
             Very High Equality (0.01 – 0.10)
           </span>
-          <span className="flex items-center gap-1 text-amber-600 font-semibold">
+          <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-semibold">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
             Moderate Gap (0.15 – 0.35)
           </span>
-          <span className="flex items-center gap-1 text-rose-600 font-semibold">
+          <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-semibold">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
             High Inequality (0.40 – 0.77)
           </span>

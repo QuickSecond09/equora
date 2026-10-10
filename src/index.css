@@ -87,6 +87,13 @@ html.dark .bg-\[\#FAF7F2\] {
   background-color: #0B1324;
 }
 
+html.dark .bg-\[\#FAF7F2\]\/30,
+html.dark .bg-\[\#FAF7F2\]\/40,
+html.dark .bg-\[\#FAF7F2\]\/50,
+html.dark .bg-\[\#FAF7F2\]\/60 {
+  background-color: transparent !important;
+}
+
 html.dark .bg-\[\#FAF7F2\]\/80,
 html.dark .bg-\[\#FAF7F2\]\/85,
 html.dark .bg-\[\#FAF7F2\]\/90,

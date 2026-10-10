@@ -251,18 +251,18 @@ export const ChatPage: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#2563EB] font-semibold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#2563EB] dark:text-sky-400 font-semibold">
               Interactive Dialogue Space
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Voiceflow Chatbot Integrated
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#0D192E] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#0D192E] dark:text-white tracking-tight">
             EQUORA Learning Guide
           </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-xl leading-relaxed">
             Chat directly with your Voiceflow educational assistant exploring classroom gender roles, book representation, and student equality projects.
           </p>
         </div>
@@ -270,7 +270,7 @@ export const ChatPage: React.FC = () => {
         <button
           type="button"
           onClick={resetChat}
-          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-black px-3.5 py-2 rounded-xl border border-slate-200/90 bg-white/70 hover:bg-slate-50 backdrop-blur-md shadow-2xs transition-all"
+          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-black dark:text-slate-300 dark:hover:text-white px-3.5 py-2 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white/70 hover:bg-slate-50 dark:bg-slate-800/80 dark:hover:bg-slate-700 backdrop-blur-md shadow-2xs transition-all cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>New session</span>
@@ -279,7 +279,7 @@ export const ChatPage: React.FC = () => {
 
       {/* Suggested Inquiries / Prompt Kickstarters */}
       <div className="space-y-2">
-        <div className="text-[11px] font-medium text-slate-500 flex items-center gap-1.5">
+        <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
           <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
           <span>Suggested Topics (Click to ask your Voiceflow agent directly)</span>
         </div>
@@ -290,7 +290,7 @@ export const ChatPage: React.FC = () => {
               type="button"
               onClick={() => handleSend(p)}
               disabled={isLoading}
-              className="text-xs px-3.5 py-1.5 rounded-xl bg-white hover:bg-[#FFF5F0] text-slate-700 hover:text-[#0D192E] border border-slate-200 hover:border-peach-300 transition-all shadow-2xs text-left flex items-center gap-1.5"
+              className="text-xs px-3.5 py-1.5 rounded-xl bg-white hover:bg-[#FFF5F0] dark:bg-slate-800/90 dark:hover:bg-slate-700 text-slate-700 hover:text-[#0D192E] dark:text-slate-200 dark:hover:text-white border border-slate-200 hover:border-peach-300 dark:border-slate-700 transition-all shadow-2xs text-left flex items-center gap-1.5 cursor-pointer"
             >
               <span>{p}</span>
               <ArrowRight className="w-3 h-3 text-slate-400 opacity-60" />
@@ -299,10 +299,10 @@ export const ChatPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Primary Chat Conversation Stage */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden flex flex-col h-[580px]">
+      {/* Primary Chat Conversation Stage - Deep Clean Dark Mode without Muddy Grey */}
+      <div className="bg-white dark:bg-[#0B1324] rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col h-[580px]">
         {/* Messages Stream */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-[#FAF7F2]/40">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-[#FAF7F2]/40 dark:bg-[#070D18]">
           {messages.map((msg) => {
             const isEquora = msg.sender === 'equora';
             return (
@@ -315,7 +315,7 @@ export const ChatPage: React.FC = () => {
                   className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-semibold shadow-2xs ${
                     isEquora
                       ? 'bg-gradient-to-br from-[#FFD8CC] to-[#FECDD3] text-[#0D192E]'
-                      : 'bg-[#0D192E] text-white'
+                      : 'bg-[#0D192E] dark:bg-[#2563EB] text-white'
                   }`}
                 >
                   {isEquora ? <Bot className="w-4 h-4 text-[#F97059]" /> : <User className="w-4 h-4" />}
@@ -326,14 +326,14 @@ export const ChatPage: React.FC = () => {
                   <div
                     className={`p-4 rounded-2xl text-xs sm:text-sm leading-relaxed whitespace-pre-wrap ${
                       isEquora
-                        ? 'bg-white text-slate-800 border border-slate-200/80 shadow-xs'
-                        : 'bg-[#0D192E] text-white shadow-sm'
+                        ? 'bg-white dark:bg-[#0F172A] text-slate-800 dark:text-slate-100 border border-slate-200/80 dark:border-slate-800 shadow-xs'
+                        : 'bg-[#0D192E] dark:bg-[#1E293B] text-white shadow-sm dark:border dark:border-slate-700'
                     }`}
                   >
                     {msg.text}
                   </div>
 
-                  <div className="flex items-center gap-3 px-1 text-[10px] text-slate-400">
+                  <div className="flex items-center gap-3 px-1 text-[10px] text-slate-400 dark:text-slate-500">
                     <span>{msg.timestamp}</span>
 
                     {isEquora && (
@@ -343,13 +343,15 @@ export const ChatPage: React.FC = () => {
                           type="button"
                           onClick={() => handleToggleSpeak(msg.text, msg.id)}
                           className={`transition-colors flex items-center gap-1 ${
-                            speakingId === msg.id ? 'text-[#2563EB] font-semibold' : 'hover:text-slate-600'
+                            speakingId === msg.id
+                              ? 'text-[#2563EB] dark:text-sky-400 font-semibold'
+                              : 'hover:text-slate-600 dark:hover:text-slate-300'
                           }`}
                           title="Listen to audio reading"
                         >
                           {speakingId === msg.id ? (
                             <>
-                              <VolumeX className="w-3 h-3 text-[#2563EB] animate-pulse" />
+                              <VolumeX className="w-3 h-3 text-[#2563EB] dark:text-sky-400 animate-pulse" />
                               <span>Stop Audio</span>
                             </>
                           ) : (
@@ -364,12 +366,12 @@ export const ChatPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => copyToClipboard(msg.text, msg.id)}
-                          className="hover:text-slate-600 transition-colors flex items-center gap-1"
+                          className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors flex items-center gap-1"
                         >
                           {copiedId === msg.id ? (
                             <>
                               <Check className="w-3 h-3 text-emerald-500" />
-                              <span className="text-emerald-600 font-medium">Copied</span>
+                              <span className="text-emerald-600 dark:text-emerald-400 font-medium">Copied</span>
                             </>
                           ) : (
                             <>
@@ -379,7 +381,7 @@ export const ChatPage: React.FC = () => {
                           )}
                         </button>
 
-                        <span className="inline-flex items-center gap-1 text-[9px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                        <span className="inline-flex items-center gap-1 text-[9px] font-mono text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                           Voiceflow AI
                         </span>
                       </div>
@@ -396,11 +398,11 @@ export const ChatPage: React.FC = () => {
               <div className="w-8 h-8 rounded-xl bg-[#FFD8CC] text-[#0D192E] flex items-center justify-center shrink-0">
                 <Sparkles className="w-4 h-4 text-[#F97059] animate-spin" />
               </div>
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 text-xs text-slate-500 flex items-center gap-2 shadow-2xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-bounce" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-bounce [animation-delay:0.2s]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-bounce [animation-delay:0.4s]" />
-                <span className="ml-1 font-medium text-slate-600">Voiceflow agent is responding...</span>
+              <div className="bg-white dark:bg-[#0F172A] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-sky-400 animate-bounce" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-sky-400 animate-bounce [animation-delay:0.2s]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] dark:bg-sky-400 animate-bounce [animation-delay:0.4s]" />
+                <span className="ml-1 font-medium text-slate-600 dark:text-slate-300">Voiceflow agent is responding...</span>
               </div>
             </div>
           )}
@@ -408,8 +410,8 @@ export const ChatPage: React.FC = () => {
         </div>
 
         {/* Input Bar */}
-        <div className="p-3 sm:p-4 bg-white border-t border-slate-200">
-          <div className="relative flex items-end gap-2 bg-[#FAF7F2] rounded-2xl p-2 border border-slate-200/80 focus-within:border-[#2563EB] focus-within:bg-white transition-all">
+        <div className="p-3 sm:p-4 bg-white dark:bg-[#0B1324] border-t border-slate-200 dark:border-slate-800">
+          <div className="relative flex items-end gap-2 bg-[#FAF7F2] dark:bg-[#070D18] rounded-2xl p-2 border border-slate-200/80 dark:border-slate-800 focus-within:border-[#2563EB] dark:focus-within:border-sky-500 focus-within:bg-white dark:focus-within:bg-[#0B1324] transition-all">
             <textarea
               ref={textareaRef}
               value={input}
@@ -417,23 +419,23 @@ export const ChatPage: React.FC = () => {
               onKeyDown={handleKeyDown}
               placeholder="Ask about gender roles, textbook representation, or equality projects..."
               rows={2}
-              className="flex-1 bg-transparent border-none outline-none text-xs sm:text-sm text-slate-800 placeholder-slate-400 p-2 resize-none"
+              className="flex-1 bg-transparent border-none outline-none text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 p-2 resize-none"
             />
 
             <button
               type="button"
               onClick={() => handleSend()}
               disabled={!input.trim() || isLoading}
-              className="p-3 text-white bg-[#0D192E] hover:bg-[#1E293B] disabled:opacity-40 rounded-xl transition-all shadow-sm shrink-0 flex items-center justify-center"
+              className="p-3 text-white bg-[#0D192E] hover:bg-[#1E293B] dark:bg-[#2563EB] dark:hover:bg-[#1D4ED8] disabled:opacity-40 rounded-xl transition-all shadow-sm shrink-0 flex items-center justify-center cursor-pointer"
               title="Send Message (Enter)"
             >
               <Send className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="px-2 pt-2 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="px-2 pt-2 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
             <span>Press Enter to send, Shift + Enter for new line</span>
-            <span className="flex items-center gap-1 text-slate-500">
+            <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
               <Shield className="w-3 h-3 text-emerald-500" /> Connected to Voiceflow Dialog Agent
             </span>
           </div>
@@ -442,33 +444,33 @@ export const ChatPage: React.FC = () => {
 
       {/* Educational Guidance Footer Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-2">
-        <div className="p-4 rounded-2xl backdrop-blur-md bg-white/70 border border-white/80 shadow-2xs space-y-1.5">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#0D192E]">
-            <BookOpen className="w-3.5 h-3.5 text-[#2563EB]" />
+        <div className="p-4 rounded-2xl backdrop-blur-md bg-white/70 dark:bg-[#0B1324]/80 border border-white/80 dark:border-slate-800 shadow-2xs space-y-1.5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#0D192E] dark:text-white">
+            <BookOpen className="w-3.5 h-3.5 text-[#2563EB] dark:text-sky-400" />
             <span>Nuanced Curriculum</span>
           </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            Explores historical context and multiple perspectives rather than binary accusations.
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            Examines historical textbook balance and subject stereotyping through evidence-grounded pedagogy.
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl backdrop-blur-md bg-white/70 border border-white/80 shadow-2xs space-y-1.5">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#0D192E]">
+        <div className="p-4 rounded-2xl backdrop-blur-md bg-white/70 dark:bg-[#0B1324]/80 border border-white/80 dark:border-slate-800 shadow-2xs space-y-1.5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#0D192E] dark:text-white">
             <Compass className="w-3.5 h-3.5 text-[#F97059]" />
-            <span>Classroom Actionable</span>
+            <span>Constructive Solutions</span>
           </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            Get practical rephrasings and discussion prompts you can share with your classmates and teachers.
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            Offers practical suggestions for lesson plans, classroom chores, and gender-inclusive discussions.
           </p>
         </div>
 
-        <div className="p-4 rounded-2xl backdrop-blur-md bg-white/70 border border-white/80 shadow-2xs space-y-1.5">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#0D192E]">
-            <Shield className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Student Privacy First</span>
+        <div className="p-4 rounded-2xl backdrop-blur-md bg-white/70 dark:bg-[#0B1324]/80 border border-white/80 dark:border-slate-800 shadow-2xs space-y-1.5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#0D192E] dark:text-white">
+            <Radio className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Voiceflow Integration</span>
           </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            Safe, strictly educational, and never retains personal student identification.
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            Connected to custom knowledge base trained on international education research benchmarks.
           </p>
         </div>
       </div>
